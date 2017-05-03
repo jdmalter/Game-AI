@@ -87,10 +87,12 @@ click on its respective button. It is possible to close each processing window w
     Mutation
         Provides kinematic setting, restriction, and update functions.
 ### learning
+    Learning
+        Provides decision tree learning.
     Model
         A basic, immutable model for a regression.
     Models
-        Provides operations to compute information gain from attributes on model.
+        Reads models from a csv and trains decision trees on those models.
     Recording
         Records the behavior tree algorithm.
 ### problem
@@ -128,7 +130,7 @@ click on its respective button. It is possible to close each processing window w
     DecisionTree
         Runs the decision tree algorithm.
     Learning
-        Applies the decision tree learning algorithm.
+        Runs and applies the decision tree learning algorithm.
 ### screenmovement
     ArriveSteering
         Runs the arrive steering algorithm.

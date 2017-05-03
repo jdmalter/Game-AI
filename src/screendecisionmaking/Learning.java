@@ -34,7 +34,7 @@ import target.Target;
 import vector.Vector;
 
 /**
- * Runs the decision tree learning algorithm.
+ * Runs and applies the decision tree learning algorithm.
  * 
  * @author Jacob Malter
  */

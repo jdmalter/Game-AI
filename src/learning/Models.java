@@ -17,6 +17,11 @@ import java.util.function.Supplier;
 import decisiontree.Tree;
 import screendecisionmaking.BehaviorTree.Action;
 
+/**
+ * Reads models from a csv and trains decision trees on those models.
+ * 
+ * @author Jacob Malter
+ */
 public final class Models {
 
 	/**

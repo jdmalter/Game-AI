@@ -1,15 +1,18 @@
 package drawing;
 
+import static drawing.SmallGraph.drawEdge;
+import static drawing.SourcePoint.drawSatisfaction;
 import static java.util.Objects.requireNonNull;
+import static sequence.Sequences.reduce;
 
 import java.util.function.Consumer;
 
 import processing.core.PApplet;
+import sequence.Sequence;
 import target.Target;
-import vector.Vector;
 
 /**
- * Provides a stateless representation to draw a target.
+ * Provides a stateless representation to draw a path.
  * 
  * <p>
  * I want to easily draw simple characters to the screen. A stateless functional
@@ -55,25 +58,14 @@ import vector.Vector;
  * Components</a></li>
  * </ul>
  * 
- * <p>
- * After some consideration, null objects are treatly differently. Changed the
- * documentation from a small message in the description to a throws annotiation
- * to grab more attention. Removed the string message from the actual null
- * pointer message because it was redundant.
- * 
  * @author Jacob Malter
  */
-public final class SourcePoint {
-
-	/** The hexadecimal red, blue, green color of white. */
-	private static final int STROKE = 0xFFFFFFFF;
-	/** The diameter of the drawn ellipse. */
-	private static final float WEIGHT = 1.5f;
+public final class Path {
 
 	/**
 	 * Cannot be instantiated by users.
 	 */
-	private SourcePoint() {
+	private Path() {
 
 	}
 
@@ -88,49 +80,34 @@ public final class SourcePoint {
 	 * @throws NullPointerException
 	 *             if pa is null
 	 */
-	public static Consumer<Target> bind(PApplet pa) {
+	public static Consumer<Sequence<Target>> bind(PApplet pa) {
 		requireNonNull(pa);
 
-		return (t) -> draw(pa, t);
+		return (seq) -> draw(pa, seq);
 	}
 
 	/**
-	 * Draws a target on the parent with two unfilled ellipses of at the
-	 * position.
+	 * If there is more than one target in seq, draws first target and edges
+	 * between drawing of previous target and drawing current target.
 	 * 
 	 * @param pa
 	 *            A base class for sketching.
-	 * @param t
-	 *            The target being drawn.
+	 * @param seq
+	 *            A list of target between the character and its goal.
 	 */
-	public static void draw(PApplet pa, Target t) {
-		pa.noFill();
-		pa.stroke(STROKE);
-		pa.strokeWeight(WEIGHT);
+	public static void draw(PApplet pa, Sequence<Target> seq) {
+		// if there is more than one target in seq
+		seq.rest().ifPresent((rest) -> {
+			// draw first target on seq
+			drawSatisfaction(pa, seq.first());
 
-		// draw the point
-		Vector p = t.position();
-		pa.ellipse(p.x(), p.y(), t.satisfaction(), t.satisfaction());
-		pa.ellipse(p.x(), p.y(), t.decceleration(), t.decceleration());
-	}
-
-	/**
-	 * Draws a target on the parent with one unfilled ellipses of at the
-	 * position.
-	 * 
-	 * @param pa
-	 *            A base class for sketching.
-	 * @param t
-	 *            The target being drawn.
-	 */
-	public static void drawSatisfaction(PApplet pa, Target t) {
-		pa.noFill();
-		pa.stroke(STROKE);
-		pa.strokeWeight(WEIGHT);
-
-		// draw the point
-		Vector p = t.position();
-		pa.ellipse(p.x(), p.y(), t.satisfaction(), t.satisfaction());
+			// draw all other targets with edge between current and previous
+			reduce(rest, seq.first(), (previous, current) -> {
+				drawSatisfaction(pa, current);
+				drawEdge(pa, current, previous);
+				return current;
+			});
+		});
 	}
 
 }

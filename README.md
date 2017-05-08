@@ -48,6 +48,8 @@ click on its respective button. It is possible to close each processing window w
         Provides a stateless representation to draw a character.
     Drive
         Provides a stateless representation to draw a drive bar.
+    Path
+        Provides a stateless representation to draw a path.
     SmallGraph
         Provides a stateless representation to draw a digraph.
     SourcePoint

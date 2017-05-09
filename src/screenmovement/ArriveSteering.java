@@ -31,13 +31,6 @@ import vector.Vector;
  */
 public class ArriveSteering extends Movement {
 
-	/** The diameter of the drawn ellipses. */
-	private static final float ELLIPSE_DIAMETER = 20f;
-	/** The width of the display window in units of pixels. */
-	private static final int WIDTH = 800;
-	/** The height of the display window in units of pixels. */
-	private static final int HEIGHT = 800;
-
 	/** The radius of satisfaction for targets. */
 	private static final float ARRIVE_SATISFACTION = 2;
 	/** The radius of deceleration for targets. */
@@ -66,7 +59,7 @@ public class ArriveSteering extends Movement {
 	private static final int FREQUENCY = 30;
 
 	/** A new draw function that has its pa set to the provided pa. */
-	private final Consumer<Target> drawSource;
+	private final Consumer<Target> drawSource = bind(this);
 
 	/**
 	 * Replaces the current character with the result of the function that
@@ -75,14 +68,6 @@ public class ArriveSteering extends Movement {
 	private Consumer<Function<Steering, Steering>> replacer;
 	/** The current target for the character to arrive at. */
 	private Target target;
-
-	/**
-	 * Sets width, height, and diameter.
-	 */
-	public ArriveSteering() {
-		super(WIDTH, HEIGHT, ELLIPSE_DIAMETER);
-		drawSource = bind(this);
-	}
 
 	@Override
 	public void mousePressed() {

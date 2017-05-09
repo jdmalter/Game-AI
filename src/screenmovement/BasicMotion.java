@@ -1,22 +1,24 @@
 package screenmovement;
 
 import static java.util.Arrays.asList;
-import static kinematic.Matching.seek;
-import static kinematic.Mutation.restrict;
-import static kinematic.Mutation.setVelocity;
-import static kinematic.Mutation.update;
+import static steering.Mutation.restrict;
+import static steering.Mutation.update;
 import static target.Factory.apply;
 import static target.Predicate.satisfied;
-import static utility.Random.nextColor;
+import static utility.Mathf.angle;
+import static vector.Arithmetic.subtract;
 import static vector.Factory.ZERO;
 import static vector.Factory.create;
+import static vector.Property.direction;
+import static vector.Property.magnitude;
 
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
-import drawing.Character;
-import kinematic.Kinematic;
 import screen.Movement;
+import steering.Steering;
 import target.Target;
 import vector.Vector;
 
@@ -58,8 +60,6 @@ import vector.Vector;
  */
 public class BasicMotion extends Movement {
 
-	/** The diameter of the drawn ellipses. */
-	private static final float ELLIPSE_DIAMETER = 20f;
 	/** The width of the display window in units of pixels. */
 	private static final int WIDTH = 400;
 	/** The height of the display window in units of pixels. */
@@ -86,19 +86,42 @@ public class BasicMotion extends Movement {
 	private int index;
 	/** An ordered collection of target data structures. */
 	private List<Target> path;
+
 	/**
-	 * A description of the character's position, angle, velocity, and angular
-	 * velocity.
+	 * Replaces the current character with the result of the function that
+	 * accepts the current character and produces a new character.
 	 */
-	private Kinematic character;
-	/** The character's color. */
-	private int color;
+	private Consumer<Function<Steering, Steering>> replacer;
+
+	/**
+	 * @param s
+	 *            A steering data structure.
+	 * @param t
+	 *            A target data structure.
+	 * @return A linear velocity which equals the difference of the target
+	 *         position and the current position.
+	 */
+	private static Vector seek(Steering s, Target t) {
+		return subtract(t.position(), s.position());
+	}
+
+	/**
+	 * @param s
+	 *            A steering data structure.
+	 * @return An angular velocity which equals the difference between the angle
+	 *         of the velocity and the current angle.
+	 */
+	private static float align(Steering s) {
+		float angularVelocity = magnitude(s.velocity()) == 0 ? 0 : direction(s.velocity()) - s.angle();
+		return angle(angularVelocity);
+	}
 
 	/**
 	 * Sets width, height, and diameter.
 	 */
 	public BasicMotion() {
-		super(WIDTH, HEIGHT, ELLIPSE_DIAMETER);
+		width = WIDTH;
+		height = HEIGHT;
 	}
 
 	@Override
@@ -108,8 +131,9 @@ public class BasicMotion extends Movement {
 		path = asList(TARGET_FACTORY.apply(PADDING, height - PADDING),
 				TARGET_FACTORY.apply(width - PADDING, height - PADDING), TARGET_FACTORY.apply(width - PADDING, PADDING),
 				TARGET_FACTORY.apply(PADDING, PADDING));
-		character = new Kinematic(create(PADDING, height - PADDING), ZERO, 0, 0);
-		color = nextColor();
+		Vector position = create(PADDING, height - PADDING);
+		Steering character = new Steering(position, ZERO, ZERO, 0, 0, 0);
+		replacer = addCharacter(character);
 	}
 
 	@Override
@@ -117,22 +141,25 @@ public class BasicMotion extends Movement {
 		float elapsed = elapsed();
 		super.draw();
 
-		if (frames() % FREQUENCY == 0) {
-			dropBreadcrumb(character.position());
-		}
+		replacer.accept((character) -> {
+			if (frames() % FREQUENCY == 0) {
+				dropBreadcrumb(character.position());
+			}
 
-		if (satisfied(path.get(index), character.position())) {
-			index = (index + 1) % path.size();
-		}
+			if (satisfied(path.get(index), character.position())) {
+				index = (index + 1) % path.size();
+			}
 
-		Vector velocity = seek(character, path.get(index));
-		float angularVelocity = seek(character);
+			Vector velocity = seek(character, path.get(index));
+			float angularVelocity = align(character);
 
-		character = setVelocity(character, velocity, angularVelocity);
-		character = restrict(character, width, height, MAX_SPEED, MAX_ANGULAR_SPEED);
-		character = update(character, elapsed);
+			character = new Steering(character.position(), velocity, character.acceleration(), character.angle(),
+					angularVelocity, character.angularAcceleration());
+			character = restrict(character, width, height, MAX_SPEED, MAX_ANGULAR_SPEED, 0, 0);
+			character = update(character, elapsed);
 
-		Character.draw(this, color, ELLIPSE_DIAMETER, character.position(), character.angle());
+			return character;
+		});
 	}
 
 }

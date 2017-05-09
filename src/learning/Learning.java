@@ -3,12 +3,12 @@ package learning;
 import static decisiontree.Tree.compose;
 import static decisiontree.Tree.leaf;
 import static function.HigherOrder.andThen;
-import static function.HigherOrder.comparator;
 import static function.HigherOrder.compose;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static utility.Comparators.ASCENDING;
 import static utility.Mathf.log2;
 
 import java.util.ArrayList;
@@ -20,7 +20,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import decisiontree.Tree;
-import utility.Mathf;
 import utility.Pair;
 
 /**
@@ -142,7 +141,7 @@ public final class Learning {
 		};
 
 		// maximize information gain
-		return features.stream().max(compose(comparator(Mathf::lessThan), informationGain)::apply);
+		return features.stream().max(compose(ASCENDING, informationGain)::apply);
 	}
 
 	/**

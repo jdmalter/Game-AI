@@ -1,10 +1,11 @@
 package vector;
 
-import static java.util.Objects.*;
+import static java.util.Objects.requireNonNull;
+import static utility.Mathf.cos;
+import static utility.Mathf.sin;
+
 import java.util.function.BiFunction;
 import java.util.function.Function;
-
-import utility.Mathf;
 
 /**
  * Provides constants, factory functions, mapping functions, and application
@@ -102,8 +103,8 @@ public final class Factory {
 	 * @return A unit vector who angle is that same as t and whose length is 1.
 	 */
 	public static Vector create(float t) {
-		float cos = Mathf.cos(t);
-		float sin = Mathf.sin(t);
+		float cos = cos(t);
+		float sin = sin(t);
 		return create(cos, sin);
 	}
 

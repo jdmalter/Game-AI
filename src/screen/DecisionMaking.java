@@ -1,11 +1,10 @@
 package screen;
 
-import static function.HigherOrder.comparator;
 import static function.HigherOrder.compose;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.empty;
 import static java.util.function.Function.identity;
-import static searchfunction.Factory.euclidean;
+import static search.Heuristics.euclidean;
 import static sequence.Sequences.conj;
 import static sequence.Sequences.empty;
 import static steering.Matching.align;
@@ -15,6 +14,7 @@ import static steering.Mutation.restrict;
 import static steering.Mutation.setAcceleration;
 import static steering.Mutation.update;
 import static target.Predicate.satisfied;
+import static utility.Comparators.ASCENDING;
 import static vector.Arithmetic.subtract;
 import static vector.Factory.ZERO;
 import static vector.Factory.create;
@@ -31,11 +31,9 @@ import digraphproblem.DigraphProblem;
 import domain.FloorGraph;
 import queuesearch.PriorityQueueSearch;
 import search.AStarSearch;
-import searchfunction.Heuristic;
 import sequence.Sequence;
 import steering.Steering;
 import target.Target;
-import utility.Mathf;
 import vector.Vector;
 
 /**
@@ -155,7 +153,7 @@ public abstract class DecisionMaking<A> extends Movement {
 	 */
 	public Target quantize(Vector v) {
 		Function<Target, Float> distance = (target) -> magnitude(subtract(target.position(), v));
-		return graph.get().min(compose(comparator(Mathf::lessThan), distance)::apply).get();
+		return graph.get().min(compose(ASCENDING, distance)::apply).get();
 	}
 
 	/**
@@ -206,7 +204,7 @@ public abstract class DecisionMaking<A> extends Movement {
 		 * pathFind because it belongs with heurisitc and astar.
 		 */
 		PriorityQueueSearch<DigraphProblem<Target>, Target, Target> priorityQueueSearch = new PriorityQueueSearch<DigraphProblem<Target>, Target, Target>();
-		Heuristic<Target> heurisitic = euclidean(goal.position()).compose(Target::position);
+		Function<? super Target, Float> heurisitic = euclidean(goal.position()).compose(Target::position);
 		AStarSearch<DigraphProblem<Target>, Target, Target> astar = new AStarSearch<DigraphProblem<Target>, Target, Target>(
 				priorityQueueSearch, heurisitic);
 

@@ -19,12 +19,24 @@ public abstract class Screen extends PApplet {
 	 */
 	private static final int BLACK = 0xFF000000;
 
+	/** The width of the display window in units of pixels. */
+	public static final int WIDTH = 800;
+	/** The height of the display window in units of pixels. */
+	public static final int HEIGHT = 800;
+
 	/**
 	 * How many times {@link #draw()} has been called.
 	 */
 	private int frames = 0;
 	/** The last time in milliseconds of the last call to {@link #draw()}. */
 	private double timer = System.currentTimeMillis();
+
+	/**
+	 * Sets width and height to defaults.
+	 */
+	public Screen() {
+		this(WIDTH, HEIGHT);
+	}
 
 	/**
 	 * Sets width and height.
@@ -35,8 +47,8 @@ public abstract class Screen extends PApplet {
 	 *            The height of the display window in units of pixels.
 	 */
 	public Screen(int w, int h) {
-		this.width = w;
-		this.height = h;
+		width = w;
+		height = h;
 	}
 
 	/**

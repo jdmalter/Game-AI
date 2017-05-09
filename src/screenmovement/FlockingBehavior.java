@@ -1,6 +1,5 @@
 package screenmovement;
 
-import static function.HigherOrder.comparator;
 import static function.HigherOrder.compose;
 import static java.util.Arrays.asList;
 import static steering.Blender.weightedBlend;
@@ -12,6 +11,7 @@ import static steering.Mutation.restrict;
 import static steering.Mutation.setAcceleration;
 import static steering.Mutation.update;
 import static target.Factory.apply;
+import static utility.Comparators.ASCENDING;
 import static utility.Random.nextBinomial;
 import static utility.Random.nextFloat;
 import static vector.Arithmetic.divide;
@@ -34,7 +34,6 @@ import java.util.function.Function;
 import screen.Movement;
 import steering.Steering;
 import target.Target;
-import utility.Mathf;
 import vector.Property;
 import vector.Vector;
 
@@ -121,6 +120,8 @@ public class FlockingBehavior extends Movement {
 	 * update.
 	 */
 	private int lastframe;
+	/** An accelaration applied to all characters. */
+	private Vector wind = multiply(create(nextFloat() * TAU), MAX_ACCELERATION);
 
 	/**
 	 * Sets width, height, and diameter.
@@ -140,8 +141,6 @@ public class FlockingBehavior extends Movement {
 			replacers.add(addCharacter(character));
 		}
 	}
-
-	private Vector wind = multiply(create(nextFloat() * TAU), MAX_ACCELERATION);
 
 	@Override
 	public void draw() {
@@ -173,7 +172,7 @@ public class FlockingBehavior extends Movement {
 						// vector with greatest magnitude.
 						Vector separation = nearNeighbors.parallelStream().map((neighbor) -> {
 							return avoid(reference, neighbor, COLLISION_TIME, COLLISION_RADIUS, MAX_ACCELERATION);
-						}).max(compose(comparator(Mathf::lessThan), Property::magnitude)::apply).get();
+						}).max(compose(ASCENDING, Property::magnitude)::apply).get();
 
 						// Compute alignment from average velocity.
 						Vector averageVelocity = divide(sum(nearNeighbors.stream().map(Steering::velocity)),

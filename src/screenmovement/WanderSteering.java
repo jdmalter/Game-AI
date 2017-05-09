@@ -32,13 +32,6 @@ import vector.Vector;
  */
 public class WanderSteering extends Movement {
 
-	/** The width of the display window in units of pixels. */
-	private static final int WIDTH = 800;
-	/** The height of the display window in units of pixels. */
-	private static final int HEIGHT = 800;
-	/** The diameter of the drawn ellipses. */
-	private static final float ELLIPSE_DIAMETER = 20f;
-
 	/** The mean number of frames between new wander targets. */
 	private static final long MEAN = 60;
 	/**
@@ -95,13 +88,6 @@ public class WanderSteering extends Movement {
 	 * update.
 	 */
 	private int lastframe;
-
-	/**
-	 * Sets width, height, and diameter.
-	 */
-	public WanderSteering() {
-		super(WIDTH, HEIGHT, ELLIPSE_DIAMETER);
-	}
 
 	@Override
 	public void settings() {

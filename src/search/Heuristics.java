@@ -1,15 +1,15 @@
-package kinematic;
+package search;
 
-import static utility.Mathf.angle;
+import static java.util.Objects.requireNonNull;
 import static vector.Arithmetic.subtract;
-import static vector.Property.direction;
 import static vector.Property.magnitude;
 
-import target.Target;
+import java.util.function.Function;
+
 import vector.Vector;
 
 /**
- * Provides linear and angular position matching behaviors.
+ * Provides constants and out of the box heuristics.
  * 
  * <p>
  * I want to avoid unexpected returns from function calls. Through pure
@@ -56,38 +56,77 @@ import vector.Vector;
  * functions</a></li>
  * </ul>
  * 
+ * <p>
+ * After some consideration, null objects are treatly differently. Changed the
+ * documentation from a small message in the description to a throws annotiation
+ * to grab more attention. Removed the string message from the actual null
+ * pointer message because it was redundant.
+ * 
  * @author Jacob Malter
  */
-public final class Matching {
+public final class Heuristics {
 
 	/**
 	 * Cannot be instantiated by users.
 	 */
-	private Matching() {
+	private Heuristics() {
 
 	}
 
 	/**
-	 * @param k
-	 *            A kinematic data structure.
-	 * @param t
-	 *            A target data structure.
-	 * @return A linear velocity which equals the difference of the target
-	 *         position and the current position.
+	 * @param guess
+	 *            the estimated cost of the cheapest solution from any given
+	 *            state.
+	 * @return A heurisitic that always returns the given guess.
+	 * @throws IllegalArgumentException
+	 *             if guess is non-negative
 	 */
-	public static Vector seek(Kinematic k, Target t) {
-		return subtract(t.position(), k.position());
+	public static <S> Function<? super S, Float> constant(float guess) {
+		if (guess < 0) {
+			throw new IllegalArgumentException("guess must be non-negative");
+		}
+
+		return (state) -> guess;
 	}
 
 	/**
-	 * @param k
-	 *            A kinematic data structure.
-	 * @return An angular velocity which equals the difference between the angle
-	 *         of the velocity and the current angle.
+	 * @return A heurisitic that always returns zero.
 	 */
-	public static float seek(Kinematic k) {
-		float angularVelocity = magnitude(k.velocity()) == 0 ? 0 : direction(k.velocity()) - k.angle();
-		return angle(angularVelocity);
+	public static <S> Function<? super S, Float> zero() {
+		return constant(0);
+	}
+
+	/**
+	 * @return A heurisitic that always returns positive infinity.
+	 */
+	public static <S> Function<? super S, Float> infinity() {
+		return constant(Float.POSITIVE_INFINITY);
+	}
+
+	/**
+	 * @param goal
+	 *            A vector goal state.
+	 * @return A heurisitic that returns the manhattan distance to the goal.
+	 * @throws NullPointerException
+	 *             if goal is null
+	 */
+	public static Function<? super Vector, Float> manhattan(Vector goal) {
+		requireNonNull(goal);
+
+		return (state) -> goal.x() - state.x() + goal.y() - state.y();
+	}
+
+	/**
+	 * @param goal
+	 *            A vector goal state.
+	 * @return A heurisitic that returns the euclidean distance to the goal.
+	 * @throws NullPointerException
+	 *             if goal is null
+	 */
+	public static Function<? super Vector, Float> euclidean(Vector goal) {
+		requireNonNull(goal);
+
+		return (state) -> magnitude(subtract(goal, state));
 	}
 
 }

@@ -1,6 +1,6 @@
 package search;
 
-import static searchfunction.Factory.zero;
+import static search.Heuristics.zero;
 
 import problem.Problem;
 import queuesearch.PriorityQueueSearch;

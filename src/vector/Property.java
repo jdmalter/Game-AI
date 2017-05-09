@@ -1,5 +1,7 @@
 package vector;
 
+import static utility.Mathf.atan2;
+import static utility.Mathf.hypot;
 import static vector.Factory.create;
 
 import utility.Mathf;
@@ -71,7 +73,7 @@ public final class Property {
 	 * @return The angle in radians from the positive horizontal axis.
 	 */
 	public static float direction(Vector a) {
-		return Mathf.atan2(a.y(), a.x());
+		return atan2(a.y(), a.x());
 	}
 
 	/**
@@ -83,7 +85,7 @@ public final class Property {
 	 *         Cartesian coordinates.
 	 */
 	public static float magnitude(Vector a) {
-		return Mathf.hypot(a.x(), a.y());
+		return hypot(a.x(), a.y());
 	}
 
 	// changed unit to use direction because Mathf.atan2 better handles wierd

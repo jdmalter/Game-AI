@@ -26,9 +26,9 @@ import target.Target;
 public abstract class IndoorEnvironment<A> extends DecisionMaking<A> {
 
 	/** The width of the display window in units of pixels. */
-	private static final int WIDTH = 800;
+	public static final int WIDTH = 800;
 	/** The height of the display window in units of pixels. */
-	private static final int HEIGHT = 800;
+	public static final int HEIGHT = 800;
 	/** The diameter of the drawn ellipses. */
 	private static final float ELLIPSE_DIAMETER = 20f;
 
@@ -313,8 +313,7 @@ public abstract class IndoorEnvironment<A> extends DecisionMaking<A> {
 	}
 
 	/**
-	 * Passes {@value #WIDTH}, {@value #HEIGHT}, {@value #ELLIPSE_DIAMETER}, and
-	 * a new graph to super constructor.
+	 * Passes a new graph to super constructor.
 	 */
 	public IndoorEnvironment() {
 		super(WIDTH, HEIGHT, ELLIPSE_DIAMETER, graph());

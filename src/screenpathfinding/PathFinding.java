@@ -1,5 +1,6 @@
 package screenpathfinding;
 
+import static drawing.Path.bind;
 import static java.util.function.Function.identity;
 import static vector.Factory.create;
 
@@ -8,7 +9,6 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import drawing.Path;
 import screen.IndoorEnvironment;
 import sequence.Sequence;
 import target.Target;
@@ -32,7 +32,7 @@ import target.Target;
 public class PathFinding extends IndoorEnvironment<Target> {
 
 	/** A new draw function that has its pa set to the provided pa. */
-	private final Consumer<Sequence<Target>> drawPath = Path.bind(this);
+	private final Consumer<Sequence<Target>> drawPath = bind(this);
 
 	/**
 	 * replaces the current path with the result of the function that accepts

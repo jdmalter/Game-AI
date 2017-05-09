@@ -1,18 +1,18 @@
 package search;
 
+import static function.HigherOrder.compose;
 import static java.util.Objects.requireNonNull;
+import static utility.Comparators.ASCENDING;
 
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.PriorityQueue;
+import java.util.function.Function;
 
-import static function.HigherOrder.*;
 import problem.Node;
 import problem.Problem;
 import queuesearch.PriorityQueueSearch;
-import searchfunction.Evaluation;
 import sequence.Sequence;
-import utility.Mathf;
 
 /**
  * An abstract informed priority queue search using an evaluation function.
@@ -52,7 +52,7 @@ public abstract class BestFirstSearch<P extends Problem<S, A>, S, A> implements 
 	 * Returns the estimated cost of the cheapest solution through the given
 	 * node.
 	 */
-	private final Evaluation<S, A> evaluation;
+	private final Function<? super Node<S, A>, Float> evaluation;
 
 	/**
 	 * @param priorityQueueSearch
@@ -63,14 +63,15 @@ public abstract class BestFirstSearch<P extends Problem<S, A>, S, A> implements 
 	 * @throws NullPointerException
 	 *             if priorityQueueSearch or evaluation is null
 	 */
-	public BestFirstSearch(PriorityQueueSearch<P, S, A> priorityQueueSearch, Evaluation<S, A> evaluation) {
+	public BestFirstSearch(PriorityQueueSearch<P, S, A> priorityQueueSearch,
+			Function<? super Node<S, A>, Float> evaluation) {
 		this.priorityQueueSearch = requireNonNull(priorityQueueSearch);
 		this.evaluation = requireNonNull(evaluation);
 	}
 
 	@Override
 	public Optional<Optional<Sequence<A>>> search(P problem) {
-		Comparator<Node<S, A>> comparator = compose(comparator(Mathf::lessThan), evaluation::apply)::apply;
+		Comparator<Node<S, A>> comparator = compose(ASCENDING, evaluation::apply)::apply;
 		PriorityQueue<Node<S, A>> frontier = new PriorityQueue<Node<S, A>>(comparator);
 		return priorityQueueSearch.search(frontier, problem);
 	}

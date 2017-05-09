@@ -34,13 +34,23 @@ import vector.Vector;
  */
 public abstract class Movement extends Screen {
 
+	/** The maximum alpha value of 255. */
+	private static final float MAX_ALPHA = 255;
+	/**
+	 * The number of frames between a breadcrumb being added an the breadcrumb
+	 * appear on screen.
+	 */
+	private static final int DELAY = 3;
+	/** The diameter of the drawn ellipses. */
+	private static final float ELLIPSE_DIAMETER = 20f;
+
 	/** The diameter of the drawn ellipses. */
 	private final float diameter;
 
 	/** A new draw function that has its pa set to the provided pa. */
-	private final BiConsumer<Vector, Float> drawBreadcrumb;
+	private final BiConsumer<Vector, Float> drawBreadcrumb = Breadcrumb.bind(this);
 	/** A new draw function that has its pa set to the provided pa. */
-	private final QuadConsumer<Integer, Float, Vector, Float> drawCharacter;
+	private final QuadConsumer<Integer, Float, Vector, Float> drawCharacter = Character.bind(this);
 
 	/** Every steering of a character */
 	private final List<Steering> steerings = new ArrayList<Steering>();
@@ -52,13 +62,12 @@ public abstract class Movement extends Screen {
 	 */
 	private final Map<Vector, Integer> breadcrumbs = new HashMap<Vector, Integer>();
 
-	/** The maximum alpha value of 255. */
-	private static final float MAX_ALPHA = 255;
 	/**
-	 * The number of frames between a breadcrumb being added an the breadcrumb
-	 * appear on screen.
+	 * Sets width, height, and diameter to defaults.
 	 */
-	private static final int DELAY = 3;
+	public Movement() {
+		this.diameter = ELLIPSE_DIAMETER;
+	}
 
 	/**
 	 * Sets width, height, and diameter.
@@ -73,8 +82,6 @@ public abstract class Movement extends Screen {
 	public Movement(int w, int h, float d) {
 		super(w, h);
 		this.diameter = d;
-		this.drawCharacter = Character.bind(this);
-		this.drawBreadcrumb = Breadcrumb.bind(this);
 	}
 
 	/**

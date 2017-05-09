@@ -2,9 +2,10 @@ package search;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.function.Function;
+
 import problem.Problem;
 import queuesearch.PriorityQueueSearch;
-import searchfunction.Heuristic;
 
 /**
  * An informed priority queue search using an A* evaluation function.
@@ -45,7 +46,7 @@ public class AStarSearch<P extends Problem<S, A>, S, A> extends BestFirstSearch<
 	 *            Returns the estimated cost of the cheapest solution through
 	 *            the given node.
 	 */
-	public AStarSearch(PriorityQueueSearch<P, S, A> priorityQueueSearch, Heuristic<S> heuristic) {
+	public AStarSearch(PriorityQueueSearch<P, S, A> priorityQueueSearch, Function<? super S, Float> heuristic) {
 		super(priorityQueueSearch, (node) -> node.pathCost() + heuristic.apply(node.state()));
 
 		requireNonNull(heuristic);

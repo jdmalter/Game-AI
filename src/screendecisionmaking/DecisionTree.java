@@ -4,7 +4,6 @@ import static decisiontree.Tree.composeBinary;
 import static decisiontree.Tree.leaf;
 import static drawing.Drive.bind;
 import static function.HigherOrder.andThen;
-import static function.HigherOrder.comparator;
 import static function.HigherOrder.compose;
 import static java.util.Arrays.asList;
 import static java.util.function.Function.identity;
@@ -16,6 +15,7 @@ import static sequence.Sequences.seq;
 import static sequence.Sequences.stream;
 import static steering.Mutation.restrict;
 import static steering.Mutation.update;
+import static utility.Comparators.ASCENDING;
 import static utility.Random.nextFloat;
 import static vector.Arithmetic.subtract;
 import static vector.Factory.create;
@@ -39,7 +39,6 @@ import function.TriFunction;
 import screen.IndoorEnvironment;
 import sequence.Sequence;
 import target.Target;
-import utility.Mathf;
 
 /**
  * Runs the decision tree algorithm.
@@ -367,7 +366,7 @@ public class DecisionTree extends IndoorEnvironment<DecisionTree.Action> {
 	 *         minimized.
 	 */
 	private Target min(Sequence<Target> list) {
-		return stream(list).min(compose(comparator(Mathf::lessThan), this::distance)::apply).get();
+		return stream(list).min(compose(ASCENDING, this::distance)::apply).get();
 	}
 
 	/**

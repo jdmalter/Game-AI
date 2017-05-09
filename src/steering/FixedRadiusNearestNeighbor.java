@@ -1,6 +1,6 @@
 package steering;
 
-import static java.util.Arrays.asList;
+import static java.util.stream.Stream.of;
 import static vector.Arithmetic.add;
 import static vector.Arithmetic.floor;
 import static vector.Arithmetic.subtract;
@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.Stream;
 
 import vector.Vector;
 
@@ -99,12 +100,22 @@ public final class FixedRadiusNearestNeighbor {
 		return ls.parallelStream().collect(ConcurrentHashMap<Vector, Collection<Steering>>::new, (map, character) -> {
 
 			Vector bucket = floor(character.position(), r);
-			if (!map.containsKey(bucket)) {
-				map.put(bucket, new ConcurrentLinkedQueue<Steering>());
-			}
+			map.putIfAbsent(bucket, new ConcurrentLinkedQueue<Steering>());
 			map.get(bucket).add(character);
 
 		}, ConcurrentHashMap::putAll);
+	}
+
+	/**
+	 * 
+	 * @param bucket
+	 *            A key into a map of position vectors
+	 * @return A stream of buckets whose steering data structures might be
+	 *         neighbors to steering data structures in the provided bucket
+	 */
+	private static Stream<Vector> neighboringBuckets(Vector bucket) {
+		return of(bucket, add(bucket, I), add(bucket, J), add(bucket, K), subtract(bucket, I), subtract(bucket, J),
+				subtract(bucket, K));
 	}
 
 	/**
@@ -120,19 +131,15 @@ public final class FixedRadiusNearestNeighbor {
 	 *         locality of the steering data structure.
 	 */
 	public static Collection<Steering> neighbors(Map<Vector, Collection<Steering>> b, Steering s, float r) {
-		Vector characterBucket = floor(s.position(), r);
-		Collection<Vector> buckets = asList(characterBucket, add(characterBucket, I),
-				add(characterBucket, J), add(characterBucket, K), subtract(characterBucket, I),
-				subtract(characterBucket, J), subtract(characterBucket, K));
+		Stream<Collection<Steering>> neighboringBuckets = neighboringBuckets(floor(s.position(), r)).parallel()
+				.filter(b::containsKey).map(b::get);
 
-		return buckets.parallelStream().collect(ConcurrentLinkedQueue<Steering>::new, (collection, bucket) -> {
-			if (b.containsKey(bucket)) {
-				b.get(bucket).parallelStream().forEach((target) -> {
-					if (s != target && magnitude(subtract(target.position(), s.position())) < r) {
-						collection.add(target);
-					}
-				});
-			}
+		return neighboringBuckets.collect(ConcurrentLinkedQueue<Steering>::new, (collection, neighbors) -> {
+
+			neighbors.parallelStream().filter((target) -> {
+				return s != target && magnitude(subtract(target.position(), s.position())) < r;
+			}).forEach(collection::add);
+
 		}, Collection::addAll);
 	}
 

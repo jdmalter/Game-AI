@@ -194,38 +194,4 @@ public final class Mathf {
 		return (float) Math.hypot(x, y);
 	}
 
-	/**
-	 * Returns whether x is less than y. Basically, equal to {@code x < y}.
-	 * 
-	 * <p>
-	 * This predicate was created to create comparators with
-	 * {@link function.HigherOrder#comparator(java.util.function.BiPredicate)}.
-	 * 
-	 * @param x
-	 *            a value
-	 * @param y
-	 *            a value
-	 * @return whether x is less than y
-	 */
-	public static boolean lessThan(float x, float y) {
-		return x < y;
-	}
-
-	/**
-	 * Returns whether x is greater than y. Basically, equal to {@code x > y}.
-	 * 
-	 * <p>
-	 * This predicate was created to create comparators with
-	 * {@link function.HigherOrder#comparator(java.util.function.BiPredicate)}.
-	 * 
-	 * @param x
-	 *            a value
-	 * @param y
-	 *            a value
-	 * @return whether x is greater than y
-	 */
-	public static boolean greaterThan(float x, float y) {
-		return x > y;
-	}
-
 }

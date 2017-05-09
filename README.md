@@ -81,13 +81,6 @@ click on its respective button. It is possible to close each processing window w
     TriFunction
         Represents a function that accepts three arguments and produces a result.
         This is the three-arity specialization of function.
-### kinematic
-    Kinematic
-        A basic, immutable, two dimensional representation of a kinematic data structure.
-    Matching
-        Provides linear and angular position matching behaviors.
-    Mutation
-        Provides kinematic setting, restriction, and update functions.
 ### learning
     Learning
         Provides decision tree learning.
@@ -153,17 +146,10 @@ click on its respective button. It is possible to close each processing window w
     DijkstraSearch
         An informed priority queue search using an A* evaluation function whose
         heurisitic always returns zero.
+    Heuristics
+        Provides constants and out of the box heuristics.
     Search
         A functional interface for search.
-### searchfunction
-    Evaluation
-        Represents a function that accepts one node and produces the estimated cost
-        of the cheapest solution through the given node.
-    Factory
-        Provides constants and out of the box heuristics.
-    Heuristic
-        Represents a function that accepts one state and produces the estimated cost
-        of the cheapest solution from the given state.
 ### sequence
     Sequence
         A basic, immutable, persistent, generic representation of a logical list.
@@ -190,6 +176,8 @@ click on its respective button. It is possible to close each processing window w
     Target
         A basic, immutable, unitless, two dimensional representation of a target data structure.
 ### utility
+    Comparators
+        Provides comparator constants and functions.
     Mathf
         Provides float constants, exponentiation functions, and trigonometric functions.
     Pair
